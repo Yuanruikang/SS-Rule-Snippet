@@ -77,7 +77,6 @@ dns:
     - 223.5.5.5
     - 114.114.114.114
     - 119.29.29.29
-    - 8.8.8.8
   enhanced-mode: redir-host # 或 fake-ip
   fake-ip-range: 198.18.0.1/16 # Fake IP 地址池 (CIDR 形式)
   # use-hosts: true # 查询 hosts 并返回 IP 记录
@@ -91,9 +90,9 @@ dns:
   # 所有 DNS 请求将会直接发送到服务器，不经过任何代理。
   # Clash 会使用最先获得的解析记录回复 DNS 请求
   nameserver:
-    - https://13800000000.rubyfish.cn/
-    - https://dns.alidns.com/dns-query
-    - https://doh.360.cn/dns-query
+    - tls://13800000000.rubyfish.cn
+    - tls://dot.360.cn
+    - tls://dns.alidns.com
 
   # 当 fallback 参数被配置时, DNS 请求将同时发送至上方 nameserver 列表和下方 fallback 列表中配置的所有 DNS 服务器.
   # 当解析得到的 IP 地址的地理位置不是 CN 时，clash 将会选用 fallback 中 DNS 服务器的解析结果。
@@ -111,7 +110,7 @@ dns:
   #
   # 采取以上逻辑进行域名解析是为了对抗 DNS 投毒攻击。
   fallback-filter:
-    geoip: true
+    geoip: false
     ipcidr:
     # - 240.0.0.0/4
 
@@ -337,34 +336,39 @@ proxy-providers:
       url: http://www.gstatic.com/generate_204
 
 rules:
+  # 自定义规则
+  ## 您可以在此处插入您补充的自定义规则（请注意保持缩进）
+
   # Apple
   - DOMAIN,safebrowsing.urlsec.qq.com,DIRECT # 如果您并不信任此服务提供商或防止其下载消耗过多带宽资源，可以进入 Safari 设置，关闭 Fraudulent Website Warning 功能，并使用 REJECT 策略。
   - DOMAIN,safebrowsing.googleapis.com,DIRECT # 如果您并不信任此服务提供商或防止其下载消耗过多带宽资源，可以进入 Safari 设置，关闭 Fraudulent Website Warning 功能，并使用 REJECT 策略。
-  - DOMAIN,ocsp.apple.com,Proxy
+  - DOMAIN,developer.apple.com,Proxy
   - DOMAIN-SUFFIX,digicert.com,Proxy
-  - DOMAIN-SUFFIX,entrust.net,Proxy
   - DOMAIN,ocsp.verisign.net,Proxy
-  - DOMAIN-SUFFIX,apps.apple.com,Proxy
+  - DOMAIN-SUFFIX,apple-dns.net,Proxy
+  - DOMAIN,testflight.apple.com,Proxy
+  - DOMAIN,sandbox.itunes.apple.com,Proxy
   - DOMAIN,itunes.apple.com,Proxy
+  - DOMAIN-SUFFIX,apps.apple.com,Proxy
   - DOMAIN-SUFFIX,blobstore.apple.com,Proxy
   - DOMAIN,cvws.icloud-content.com,Proxy
-  - DOMAIN-SUFFIX,music.apple.com,DIRECT
   - DOMAIN-SUFFIX,mzstatic.com,DIRECT
   - DOMAIN-SUFFIX,itunes.apple.com,DIRECT
   - DOMAIN-SUFFIX,icloud.com,DIRECT
   - DOMAIN-SUFFIX,icloud-content.com,DIRECT
   - DOMAIN-SUFFIX,me.com,DIRECT
-  - DOMAIN-SUFFIX,mzstatic.com,DIRECT
-  - DOMAIN-SUFFIX,akadns.net,DIRECT
   - DOMAIN-SUFFIX,aaplimg.com,DIRECT
+  - DOMAIN-SUFFIX,cdn20.com,DIRECT
   - DOMAIN-SUFFIX,cdn-apple.com,DIRECT
+  - DOMAIN-SUFFIX,akadns.net,DIRECT
+  - DOMAIN-SUFFIX,akamaiedge.net,DIRECT
+  - DOMAIN-SUFFIX,edgekey.net,DIRECT
+  - DOMAIN-SUFFIX,mwcloudcdn.com,DIRECT
+  - DOMAIN-SUFFIX,mwcname.com,DIRECT
   - DOMAIN-SUFFIX,apple.com,DIRECT
   - DOMAIN-SUFFIX,apple-cloudkit.com,DIRECT
+  - DOMAIN-SUFFIX,apple-mapkit.com,DIRECT
   # - DOMAIN,e.crashlytics.com,REJECT //注释此选项有助于大多数App开发者分析崩溃信息；如果您拒绝一切崩溃数据统计、搜集，请取消 # 注释。
-
-
-  # 自定义规则
-  ## 您可以在此处插入您补充的自定义规则（请注意保持缩进）
 
   # 国内网站
   - DOMAIN-SUFFIX,cn,DIRECT
@@ -521,12 +525,15 @@ rules:
   - DOMAIN-KEYWORD,adsrvmedia,REJECT
   - DOMAIN-KEYWORD,adwords,REJECT
   - DOMAIN-KEYWORD,adservice,REJECT
+  - DOMAIN-SUFFIX,appsflyer.com,REJECT
   - DOMAIN-KEYWORD,domob,REJECT
+  - DOMAIN-SUFFIX,doubleclick.net,REJECT
   - DOMAIN-KEYWORD,duomeng,REJECT
   - DOMAIN-KEYWORD,dwtrack,REJECT
   - DOMAIN-KEYWORD,guanggao,REJECT
   - DOMAIN-KEYWORD,lianmeng,REJECT
   - DOMAIN-SUFFIX,mmstat.com,REJECT
+  - DOMAIN-KEYWORD,mopub,REJECT
   - DOMAIN-KEYWORD,omgmta,REJECT
   - DOMAIN-KEYWORD,openx,REJECT
   - DOMAIN-KEYWORD,partnerad,REJECT
@@ -535,6 +542,7 @@ rules:
   - DOMAIN-KEYWORD,uedas,REJECT
   - DOMAIN-KEYWORD,umeng,REJECT
   - DOMAIN-KEYWORD,usage,REJECT
+  - DOMAIN-SUFFIX,vungle.com,REJECT
   - DOMAIN-KEYWORD,wlmonitor,REJECT
   - DOMAIN-KEYWORD,zjtoolbar,REJECT
 
@@ -823,6 +831,8 @@ rules:
   - IP-CIDR,149.154.172.0/22,Proxy,no-resolve
 
   # LAN
+  - DOMAIN,injections.adguard.org,DIRECT
+  - DOMAIN,local.adguard.org,DIRECT
   - DOMAIN-SUFFIX,local,DIRECT
   - IP-CIDR,127.0.0.0/8,DIRECT
   - IP-CIDR,172.16.0.0/12,DIRECT
